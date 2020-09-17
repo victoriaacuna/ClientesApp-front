@@ -1,0 +1,100 @@
+<div class="card bg-light">
+  <div class="card-header">
+    {{title}}: {{bill.description}}
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">
+      <a [routerLink]="['']" class="btn btn-light btn-xs">&laquo; Volver</a>
+    </h4>
+    <form #billForm="ngForm">
+
+      <div class="form-group row" *ngIf="bill.client">
+        <label for="client" class="col-sm-2 col-form-label">Cliente</label>
+        <div class="col-sm-6">
+          <input disabled name="client" type="text" value="{{bill.client.name}} {{bill.client.last_name}}" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="description" class="col-sm-2 col-form-label">Descripción</label>
+        <div class="col-sm-6">
+          <input name="description" required #description="ngModel" [(ngModel)]="bill.description" type="text" class="form-control">
+          <div class="alert alert-danger" *ngIf="description.invalid && description.touched">
+            La descripción es requerida.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="observation" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-6">
+          <textarea name="observation" [(ngModel)]="bill.observation" class="form-control"></textarea>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-sm-6">
+          <mat-form-field >
+            <input type="text"
+                   placeholder="Añade un producto"
+                   aria-label="Productos"
+                   matInput
+                   [formControl]="autocompleteControl"
+                   [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="showName" (optionSelected)="selectProduct($event)">
+              <mat-option *ngFor="let product of filteredProducts | async" [value]="product">
+                {{product.name}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <table class="table table-sm table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+            <th>Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of bill.items">
+            <td>{{item.product.name}}</td>
+            <td>{{item.product.price}}</td>
+            <td>
+              <input type="number"
+                value="{{item.quantity}}" (change)="updateQuantity(item.product.id, $event)"
+                class="form-control col-sm-4">
+            </td>
+            <td>{{item.getTotal()}}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" type="button" (click)="deleteItem(item.product.id)">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 *ngIf="bill.items.length>0" class="float-right">
+        Gran Total:
+        <span class="badge badge-secondary">{{bill.getTotal()}}</span>
+      </h3>
+
+      <div *ngIf="bill.items.length==0" class="alert alert-info my-4">
+        No hay productos añadidos en esta factura.
+      </div>
+
+      <div class="form-group row">
+        <div class="col-sm-6">
+          <input type="submit" [disabled]="billForm.form.invalid || bill.items.length==0"
+            (click)="postBill()" value="Crear factura" class="btn btn-secondary">
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,0 +1,84 @@
+<div *ngIf="modalService.modal" class="open-modal animacion fade-in">
+  <div class="modal" tabindex="-1" style="display: block;">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{title}}</h5>
+          <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm">
+
+                <ul *ngIf="client" class="list-group text-dark mb-3">
+                  <li class="list-group-item">{{client.name}}</li>
+                  <li class="list-group-item">{{client.last_name}}</li>
+                  <li class="list-group-item">{{client.email}}</li>
+                  <li class="list-group-item">{{client.create_at | date: "fullDate"}}</li>
+                  <li class="list-group-item">{{client.region.name}}</li>
+                </ul>
+
+                <div class="input-group " *ngIf="authService.hasRole('ROLE_ADMIN')">
+                  <div class="custom-file">
+                    <input (change)="selectImage($event)" type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                    <label class="custom-file-label" for="inputGroupFile04">Sube una foto</label>
+                  </div>
+                  <div class="input-group-append">
+                    <button (click)="uploadImage()" class="btn btn-primary" [disabled]="!selectedImage" type="button" id="inputGroupFileAddon04">Guardar cambios</button>
+                  </div>
+                </div>
+
+                <div class="progress" *ngIf="progress>0">
+                  <div class="progress-bar progress-bar-striped" role="progressbar" [ngStyle]="{width: progress+'%'}" attr.aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100">
+                    {{progress}}%
+                  </div>
+                </div>
+
+              </div>
+              <div class="col-sm">
+                <img *ngIf="client?.image" src="http://localhost:8080/api/client/upload/img/{{client.image}}" alt="profilePic" class="img-thumbnail rounded">
+              </div>
+            </div>
+            <div *ngIf="authService.hasRole('ROLE_ADMIN')" class="row">
+              <button [routerLink]="['/bill/create/', client.id]" class="btn btn-primary">Crear</button>
+            </div>
+            <div class="row">
+              <div *ngIf="client.bills.length==0" class="alert alert-info my-4">
+                No hay facturas asignadas para este cliente.
+              </div>
+              <table *ngIf="client.bills.length>0" class="table table-bordered table-striped my-4">
+                <thead>
+                  <tr>
+                    <th>Factura</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th *ngIf="authService.hasRole('ROLE_ADMIN') || authService.hasRole('ROLE_USER')">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of client.bills">
+                    <th>{{item.id}}</th>
+                    <th>{{item.description}}</th>
+                    <th>{{item.create_at}}</th>
+                    <th>{{item.total}}</th>
+                    <th>
+                      <button *ngIf="authService.hasRole('ROLE_USER')" [routerLink]="['/bill/', item.id]" class="btn btn-primary btn-sm">Ver</button>
+                      <button *ngIf="authService.hasRole('ROLE_ADMIN')" (click)="deleteBill(item)" class="btn btn-danger btn-sm">Eliminar</button>
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" (click)="closeModal()" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

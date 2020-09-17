@@ -1,0 +1,45 @@
+<app-client-detail *ngIf="selectedClient" [client]="selectedClient"></app-client-detail>
+
+<div class="card border-dark mb-3" >
+  <div class="card-header">Clientes</div>
+  <div class="card-body text-dark">
+    <h5 class="card-title">Listado de clientes</h5>
+
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Foto de perfil</th>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Fecha</th>
+            <th *ngIf="authService.hasRole('ROLE_ADMIN')">Crear factura</th>
+            <th *ngIf="authService.hasRole('ROLE_ADMIN') || authService.hasRole('ROLE_USER')">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of clients">
+            <td>
+              <img style="width:64px;" *ngIf="!c?.image" src="assets/icon.png" alt="profilePic" class="img-thumbnail rounded">
+              <img style="width:64px;" *ngIf="c?.image" src="{{urlBackend}}api/client/upload/img/{{c.image}}" alt="profilePic" class="img-thumbnail rounded">
+            </td>
+            <td>{{c.id}}</td>
+            <td>{{c.name}}</td>
+            <td>{{c.last_name}}</td>
+            <td>{{c.email}}</td>
+            <td>{{c.create_at}}</td>
+            <td *ngIf="authService.hasRole('ROLE_ADMIN')">
+              <button [routerLink]="['/bill/create/', c.id]" class="btn btn-primary">Crear</button>
+            </td>
+            <td>
+              <button *ngIf="authService.hasRole('ROLE_ADMIN')" [routerLink]="['/client/edit', c.id]" type="button" name="button" class="btn btn-primary">Editar</button>
+              <button *ngIf="authService.hasRole('ROLE_ADMIN')" (click)="deleteClient(c)" type="button" name="button" class="btn btn-danger">Eliminar</button>
+              <button (click)="selectClient(c)"  *ngIf="authService.hasRole('ROLE_USER')" type="button" name="button" class="btn btn-success">Ver</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    <app-paginator *ngIf="paginator" [paginator]="paginator"></app-paginator>
+  </div>
+</div>

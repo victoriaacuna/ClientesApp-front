@@ -1,0 +1,55 @@
+<div class="card bg-light" *ngIf="bill">
+  <div class="card-header">
+    {{title}}: {{bill.description}}
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">
+      <a [routerLink]="['']" class="btn btn-light btn-xs">&laquo; Volver</a>
+    </h4>
+    <ul class="list-group my-2">
+      <li class="list-group-item list-group-item-primary">Datos del cliente</li>
+      <li class="list-group-item">{{bill.client.name}}</li>
+      <li class="list-group-item">{{bill.client.last_name}}</li>
+    </ul>
+    <ul class="list-group my-2">
+      <li class="list-group-item list-group-item-primary">Datos de la factura</li>
+      <li class="list-group-item">ID: {{bill.id}}</li>
+      <li class="list-group-item">Descripción: {{bill.description}}</li>
+      <li class="list-group-item">Fecha: {{bill.create_at}}</li>
+    </ul>
+
+    <table class="table table-striped table-hover table-bordered my-3">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of bill.items">
+          <th>{{item.product.name}}</th>
+          <th>{{item.product.price}}</th>
+          <th>{{item.quantity}}</th>
+          <th>{{item.total}}</th>
+        </tr>
+      </tbody>
+    </table>
+    <h3 class="float-right">
+      <span>total: </span>
+      <span class="badge badge-secondary">{{bill.total}}</span>
+    </h3>
+    <div class="card border-info mb-4" style="max-width:500px;">
+      <div class="card card-header">
+        Observaciones
+      </div>
+      <div *ngIf="bill.observation" class="card card-body">
+        {{bill.observation}}
+      </div>
+      <div *ngIf="!bill.observation" class="card card-body">
+        No tiene observación.
+      </div>
+    </div>
+  </div>
+</div>
